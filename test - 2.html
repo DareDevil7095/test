@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Washing Guide</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: #fff;
+      color: #333;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scroll-behavior: smooth;
+      padding-bottom: 30px;
+      padding-top: 30px;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      height: 350px;
+      transition: all 0.6s ease;
+      overflow: hidden;
+    }
+
+    .box {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: flex 0.6s ease, opacity 0.6s ease;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* Background images for the two boxes */
+    .box1 {
+      background: url('./Wash Guide - SRI.png') center/cover no-repeat;
+    }
+
+    .box2 {
+      background: url('./Care Tags.png') center/cover no-repeat;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      transition: background 0.6s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 15px;
+    }
+
+    .expanded .overlay {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .title {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .description {
+      font-size: 1em;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .expanded {
+      flex: 1 1 100%;
+    }
+
+    .hidden {
+      flex: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #ed2b2b;
+      color: #fff;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      display: none;
+      border-radius: 4px;
+      padding: 2px 10px;
+      z-index: 2;
+      transition: background 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: #d32424;
+    }
+
+    .expanded .close-btn {
+      display: block;
+    }
+
+    .content {
+      width: 90%;
+      max-width: 1000px;
+      margin: 25px auto 0;
+      display: none;
+      opacity: 0;
+      text-align: center;
+      transition: opacity 0.6s ease;
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-top: 5px solid #ed2b2b;
+    }
+
+    .content.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .content h2 {
+      margin-top: 0;
+      color: #ed2b2b;
+      font-size: 2em;
+      font-weight: 700;
+    }
+
+    .content p {
+      color: #555;
+      line-height: 1.6;
+      margin: 15px auto;
+      max-width: 800px;
+    }
+
+    .sub-image {
+      width: 100%;
+      max-width: 700px;
+      margin: 25px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sub-image img {
+      width: 100%;
+      display: block;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .feature-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #ed2b2b;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card h3 {
+      color: #ed2b2b;
+      margin-top: 0;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      color: #666;
+      font-size: 0.95em;
+    }
+
+    /* Accordion Styles */
+    .accordion {
+      width: 100%;
+      max-width: 900px;
+      margin: 30px auto;
+    }
+
+    .accordion-item {
+      margin-bottom: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .accordion-header {
+      width: 100%;
+      background: #ed2b2b;
+      color: white;
+      padding: 15px 20px;
+      font-size: 1.1em;
+      font-weight: 600;
+      text-align: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+
+    .accordion-header:hover {
+      background: #d32424;
+    }
+
+    .accordion-header::after {
+      content: '+';
+      position: absolute;
+      right: 20px;
+      font-size: 1.3em;
+    }
+
+    .accordion-item.active .accordion-header::after {
+      content: '-';
+    }
+
+    .accordion-body {
+      background: #fff;
+      overflow: hidden;
+      /* necessary for animation */
+      max-height: 0;
+      /* collapsed */
+      opacity: 0;
+      /* fade effect */
+      transition: max-height 0.35s ease,
+        opacity 0.3s ease;
+      padding: 0 20px;
+      /* keep side padding */
+    }
+
+    /* When expanded */
+    .accordion-item.active .accordion-body {
+      max-height: 500px;
+      /* enough space for content */
+      opacity: 1;
+      padding-bottom: 15px;
+      /* smooth slide reveal */
+    }
+
+    .intro-card {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 10px;
+      max-width: 1100px;
+      margin: 20px auto 40px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #ed2b2b;
+      text-align: left;
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .content.active {
+      animation: fadeIn 0.4s ease;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+      page-break-inside: avoid;
+    }
+
+    .uniform-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+
+    .uniform-table th {
+      background-color: #f2f2f2;
+      text-align: center;
+      padding: 10px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .uniform-table td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: middle;
+    }
+
+    .uniform-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+        /* allow full height */
+      }
+
+      .box {
+        width: 100%;
+        height: 320px;
+        /* increase height for visibility */
+        flex: none;
+        /* prevent shrinking */
+      }
+
+      .box.hidden {
+        display: none;
+      }
+
+      .overlay {
+        padding: 30px 20px;
+        /* better spacing for small screens */
+      }
+
+      .title {
+        font-size: 1.5em;
+      }
+
+      .description {
+        font-size: 0.9em;
+      }
+
+      .intro-card {
+        padding: 20px;
+        font-size: 0.95em;
+      }
+
+      .accordion-body img {
+        width: 100%;
+        height: auto;
+        max-width: 260px;
+        /* adjust if needed */
+        margin: 20px auto 10px;
+        display: block;
+      }
+
+      .container {
+        height: auto;
+      }
+
+      .feature-card,
+      .intro-card,
+      .content {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+
+      h1 {
+        font-size: 1.6em;
+        margin-top: 20px;
+        padding: 0 10px;
+      }
+
+      .uniform-table,
+  .uniform-table thead,
+  .uniform-table tbody,
+  .uniform-table th,
+  .uniform-table td,
+  .uniform-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .uniform-table thead {
+    display: none;
+  }
+
+  .uniform-table tr {
+    margin-bottom: 25px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    padding: 15px;
+    text-align: center; /* Center everything inside the card */
+  }
+
+  .uniform-table td {
+    border: none;
+    padding: 12px 10px;
+    position: relative;
+    text-align: center; /* Center text */
+  }
+
+  .uniform-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #ed2b2b;
+    display: block;
+    margin-bottom: 6px;
+    text-align: center; /* Center the label */
+  }
+
+  .uniform-table img {
+    max-width: 180px !important;
+    height: auto !important;
+    margin: 10px auto;
+    display: block; /* Ensures image centers */
+  }
+
+  .uniform-table td[data-label="WASH CARE LABEL"] img {
+    max-width: 280px !important;
+    width: 280px !important;
+    height: auto !important;
+  }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 style="text-align:center; color: #ed2b2b;">GEMS School of Research and Innovation</h1>
+  <div class="intro-card">
+    Looking for simple ways to keep your clothes in great shape? You’re in the right place.
+    We’ve put together easy guides that cover everything from how often to wash different items,
+    to sorting, detergents, and proper folding. You’ll also find a clear walkthrough of fabric-care
+    symbols so you always know what each tag means. Whether you’re new to caring for your wardrobe
+    or want to refine your routine, these tips will help your pieces last longer and look better.
+  </div>
+
+
+  <div class="container">
+    <div class="box box1" id="box1">
+      <div class="overlay">
+        <div class="title">Laundry Guide</div>
+        <div class="description">Step-by-step guide for washing, drying & caring for your clothes</div>
+      </div>
+      <button class="close-btn">&times;</button>
+    </div>
+
+    <div class="box box2" id="box2">
+      <div class="overlay">
+        <div class="title">FABRIC CARE SYMBOLS</div>
+        <div class="description">Learn what the icons on your garment labels mean</div>
+      </div>
+      <button class="close-btn">&times;</button>
+    </div>
+  </div>
+
+  <!-- Content for box 1 -->
+  <div class="content" id="content1">
+    <h2>HOW TO DO LAUNDRY</h2>
+
+    <!-- General Laundry Rules -->
+    <h3>General Laundry Rules</h3>
+    <ul style="text-align:left; max-width:800px; margin:auto; line-height:1.7;">
+      <li>Follow detergent instructions - use recommended amounts.</li>
+      <li>Check fabric care labels - symbols contain important wash information.</li>
+      <li>Sort laundry by color and soil level.</li>
+      <li>Treat stains immediately.</li>
+      <li>Use proper wash cycles and clean the dryer lint trap frequently.</li>
+    </ul>
+
+    <!-- Sorting It Out -->
+    <h2 style="margin-top:35px;">Sorting It Out</h2>
+    <p style="max-width:800px; margin:auto; line-height:1.7;">
+      Sorting helps prevent color bleeding, fading, and garment damage.
+      It groups clothing with similar wash temperatures, detergent needs, and cycle types.
+    </p>
+
+    <!-- Accordions Start -->
+    <div class="accordion">
+
+      <!-- Sort by Color -->
+      <div class="accordion-item">
+        <button class="accordion-header">Sort by Color</button>
+        <div class="accordion-body">
+          <img style="margin-top: 35px;" src="./color-icon.png">
+          <p>
+            • Wash whites separately.<br>
+            • Combine pastels and medium shades.<br>
+            • Wash brights and darks separately.<br><br>
+            Light synthetic fabrics easily absorb darker dyes, so keep them apart.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sort by Soil Level -->
+      <div class="accordion-item">
+        <button class="accordion-header">Sort by Soil Level</button>
+        <div class="accordion-body">
+          <img style="margin-top: 35px;" src="./soil-icon.png">
+          <p>
+            • Separate heavily soiled items from lightly worn clothing.<br>
+            • Soil can redeposit during washing, causing whites to appear gray.<br>
+            • Keeping heavily used garments apart protects lighter fabrics.
+          </p>
+        </div>
+      </div>
+
+      <!-- Specialty Sorting -->
+      <div class="accordion-item">
+        <button class="accordion-header">Specialty Sorting</button>
+        <div class="accordion-body">
+          <img style="margin-top: 35px;" src="./specialty-icon.png">
+          <p>
+            • <b>The Unmatched Set:</b> Mix small + large items for better drum movement.<br>
+            • <b>The Fabric Types:</b> Separate delicates and knits for gentle cycles.<br>
+            • <b>The Lint Losers:</b> Wash lint-producing items (Fuzzy sweat shirts, chenille robes, flannels)
+            separately.<br>
+            • <b>The Fluorescents:</b> Wash fluorescents alone; avoid strong stain removers unless tested.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Removing Stains -->
+    <h2 style="margin-top:35px;">Removing Stains</h2>
+    <p style="max-width:800px; margin:auto; line-height:1.7;">
+      Take care to wash away any spots and stains on your washables.
+      It helps to know exactly what type of stain it is for your best chance at removal.
+    </p>
+
+    <!-- Accordions Start -->
+    <div class="accordion">
+      <!-- Stain Removal Process -->
+      <div class="accordion-item">
+        <button class="accordion-header">Stain Removal Process</button>
+        <div class="accordion-body">
+          <p>
+            • Identify the stain type before treatment. <br>
+            • Treat stains immediately - heat sets them permanently.<br>
+            • Pretreat using stain remover, liquid detergent, or paste.<br>
+            • Test stain remover on an inside seam first.<br>
+            • Blot stains instead of rubbing.
+          </p>
+        </div>
+      </div>
+
+      <!-- Stain Fighting Tips -->
+      <div class="accordion-item">
+        <button class="accordion-header">Stain Fighting Tips</button>
+        <div class="accordion-body">
+          <p>
+            • Sugary drinks may dry invisible - always treat them.<br>
+            • Apply bleach to the entire garment to avoid uneven patches.<br>
+            • Enzyme pretreatments can help remove older stains.<br>
+            • Always wash the full garment after pretreating.<br>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Laundry Detergents -->
+    <h2 style="margin-top:35px;">About Laundry Detergents</h2>
+    <p style="max-width:800px; margin:auto; line-height:1.7;">
+      Use the recommended detergent amount as indicated on the label.
+      Using too much or too little can diminish cleaning performance.
+      For best results, always follow the fabric care instructions on your garments.
+    </p>
+
+    <!-- Accordions Start -->
+    <div class="accordion">
+      <!-- Detergents -->
+      <div class="accordion-item">
+        <button class="accordion-header">Detergents</button>
+        <div class="accordion-body">
+          <img style="margin-top: 35px;" src="./detergent-icons.png">
+          <p>
+            • <b>Liquid detergents</b> work well on food, grease, and for pretreating stains.<br>
+            • <b>Powder detergents</b> lift clay and ground-in dirt—great for kids’ clothes.<br>
+            • <b>Ultra detergents</b> are concentrated; use less and follow label directions.<br>
+            • <b>Combination detergents</b> may include softeners or color-safe bleach.<br>
+            • <b>Fragrance or Dye-free detergents</b> are available—check labels.<br>
+            • <b>Detergent packets</b> provide single-load, highly concentrated cleaning.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fabric Softeners -->
+      <div class="accordion-item">
+        <button class="accordion-header">Fabric Softeners</button>
+        <div class="accordion-body">
+          <p>
+            • Fabric softeners reduce static cling, soften fabrics, cut drying time and lessen wrinkles.<br>
+            • Liquid softeners go in the final rinse; some can be applied to a cloth for the dryer.<br>
+            • Softener sheets are used in the dryer.<br>
+            • Packet-style softeners attach to the dryer drum fin.<br>
+            • Dilute liquid softeners before adding - never pour directly on fabric.<br>
+            • <b>IMPORTANT:</b> Fabric softeners may reduce the effectiveness of flame retardancy on fabrics.
+          </p>
+        </div>
+      </div>
+
+      <!-- Prewash Soil and Stain Removers -->
+      <div class="accordion-item">
+        <button class="accordion-header">Prewash Soil and Stain Removers</button>
+        <div class="accordion-body">
+          <p>
+            • Prewash stain removers are effective on heavily soiled items, especially polyester.<br>
+            • Work well on oil-based stains - fats, body soils, cooking oils, cosmetics, motor oils.<br>
+            • Soap bars are useful on fabric softener, perspiration, and tobacco stains.<br>
+            • Available as liquids, sprays, gels, sticks, and bars.<br>
+            • Treat stains quickly; apply liquid/gel/spray before washing and repeat if needed.<br>
+            • For sticks, rub on fresh stains and wash later - even days later.<br>
+            • <b>IMPORTANT:</b> Avoid using on neon or fluorescent colors to prevent fading or color run.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content for box 2 -->
+  <div class="content" id="content2">
+    <h2>GUIDE TO FABRIC CARE SYMBOLS</h2>
+    <p>Understand the symbols on clothing labels to wash and care for garments correctly.</p>
+    <p>From washing temperatures to ironing instructions, reading the symbols helps protect your fabrics.</p>
+
+    <div>
+      <table class="uniform-table">
+        <thead>
+          <tr>
+            <th>DESCRIPTION</th>
+            <th>IMAGE</th>
+            <th>WASH CARE LABEL</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td data-label="DESCRIPTION">Boys Green Polo T-Shirt</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-kg-polo.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Navy Shorts</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-shorts.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Navy Trouser FS1-Y6</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-trouser.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Pullover</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-pullover.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Socks</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/b/o/boys-core-socks-y5-y8.jpg" ,
+                height="125px" , width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Socks.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Shirt</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/b/o/boys-y1-y4-shirt.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys Navy Polo</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-5-8-boys-polo.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys PE T-Shirt</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-pe-t-shirt_1.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys PE Shorts</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-pe-shorts-boys.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Boys PE Jacket</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-pe-jacket-boys.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Green Dress</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-kg-dress.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Navy Trouser</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-trouser-girls.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Knee Skirt</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-5-8-knee-skirt.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Cardigan</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-cardigan.jpg" , height="125px" ,
+                width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Socks</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/g/i/girls-core-socks-y5-y8_1.jpg" ,
+                height="125px" , width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Socks.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Swimsuit</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-girls-swimsuit_1.jpg" , height="125px"
+                , width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+          <tr>
+            <td data-label="DESCRIPTION">Girls Burkini</td>
+            <td data-label="IMAGE"><img src="https://www.threadsme.com/media/catalog/product/s/r/sri-girls-swimsuit-with-leggings_1.jpg" ,
+                height="125px" , width="125px"></td>
+            <td data-label="WASH CARE LABEL"><img src="./Uniform specific label/Boys Green Polo.png" , height="75px"></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Washing</h3>
+        <p>Check water temperature and machine settings recommended on the label.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Drying</h3>
+        <p>Follow tumble-dry or air-dry instructions to avoid shrinking or damage.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Ironing & Bleaching</h3>
+        <p>Icons indicate safe ironing temperature and whether bleaching is allowed.</p>
+      </div>
+    </div>
+
+    <script>
+      const boxes = document.querySelectorAll('.box');
+      const contents = document.querySelectorAll('.content');
+
+      boxes.forEach((box, index) => {
+        const closeBtn = box.querySelector('.close-btn');
+        const content = document.getElementById(`content${index + 1}`);
+
+        box.addEventListener('click', () => {
+          if (!box.classList.contains('expanded')) {
+            boxes.forEach(b => { b.classList.add('hidden'); b.classList.remove('expanded'); });
+            box.classList.remove('hidden');
+            box.classList.add('expanded');
+            contents.forEach(c => c.classList.remove('active'));
+            content.classList.add('active');
+
+            setTimeout(() => {
+              content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 400);
+          }
+        });
+
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          box.classList.remove('expanded');
+          contents.forEach(c => c.classList.remove('active'));
+          boxes.forEach(b => b.classList.remove('hidden'));
+          setTimeout(() => {
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 300);
+        });
+      });
+
+      // Accordion behavior
+      document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const item = header.parentElement;
+
+          // Close others
+          document.querySelectorAll('.accordion-item').forEach(i => {
+            if (i !== item) i.classList.remove('active');
+          });
+
+          // Toggle selected accordion
+          item.classList.toggle('active');
+        });
+      });
+    </script>
+</body>
+
+</html>
